@@ -861,7 +861,33 @@ std::string ZatData::GetChannelStreamUrl(int uniqueId, std::map<std::string, std
 
   std::string jsonString = HttpPost(m_providerUrl + "/zapi/watch/live/" + channel->cid, dataStream.str());
   
+  if (!m_recallEnabled) {
+    Document doc;
+    doc.Parse(jsonString.c_str());
+    if (!doc.GetParseError() && doc["success"].GetBool())
+    {
+      if (doc.HasMember("register_timeshift") && doc["register_timeshift"].GetBool()) {
+        RegisterTimeshift(channel);
+      }
+    }
+  }
+  
   return GetStreamUrl(jsonString, additionalPropertiesOut);
+}
+
+void ZatData::RegisterTimeshift(ZatChannel *channel) {
+  std::string jsonString = HttpPost(m_providerUrl + "/zapi/timeshift/register/" + channel->cid, "");
+  Document doc;
+  doc.Parse(jsonString.c_str());
+  if (doc.GetParseError() && !doc.HasMember("registered_at"))
+  {
+    XBMC->Log(LOG_ERROR, "Register timeshift failed for channel: %s", channel->cid.c_str());
+    return;
+  }
+  XBMC->Log(LOG_DEBUG, "Register timeshift done for channel: %s", channel->cid.c_str());
+  XBMC->Log(LOG_DEBUG, "Allowed timeshift offset: %d", doc["allowed_offset"].GetInt());
+  XBMC->Log(LOG_DEBUG, "Allowed seeking: %s", doc["forward_seeking"].GetBool() ? "yes" : "no");  
+  XBMC->Log(LOG_DEBUG, "Allowed quality: %s", doc["allowed_quality"].GetString());
 }
 
 ZatChannel *ZatData::FindChannel(int uniqueId)
