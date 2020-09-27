@@ -119,7 +119,7 @@ private:
   std::map<std::string, ZatRecordingData*> m_recordingsData;
   int64_t m_maxRecallSeconds = 0;
   std::string m_beakerSessionId;
-  std::string m_pzuid;
+  std::string m_zattooSession;
   std::vector<UpdateThread*> m_updateThreads;
   std::string m_uuid = "";
   Categories m_categories;
