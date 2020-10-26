@@ -10,7 +10,7 @@
 #
 
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules(PC_RapidJSON RapidJSON>=1.0.2 QUIET)
+  pkg_check_modules(PC_RapidJSON RapidJSON>=1.1.0 QUIET)
 endif()
 
 if(CORE_SYSTEM_NAME STREQUAL windows OR CORE_SYSTEM_NAME STREQUAL windowsstore)
